@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classificador de Atendimento Elétrico</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #ffffff 0%, #ffffff 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #008000 0%, #008000 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f5f5f5;
+            border-radius: 12px;
+            border-left: 3px solid #008000;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-icon {
+            width: 24px;
+            height: 24px;
+            background: #008000;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #000000;
+            margin-bottom: 8px;
+        }
+        
+        .radio-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 15px;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .radio-option:hover {
+            border-color: #008000;
+            background: #f7fafc;
+        }
+        
+        .radio-option input[type="radio"] {
+            cursor: pointer;
+        }
+        
+        .checkbox-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 15px;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .checkbox-option:hover {
+            border-color: #008000;
+            background: #f7fafc;
+        }
+        
+        .checkbox-option input[type="checkbox"] {
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+        }
+        
+        .checkbox-option.checked {
+            background: #eff6ef;
+            border-color: #008000;
+        }
+        
+        .results {
+            margin-top: 30px;
+        }
+        
+        .result-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 2px solid #e2e8f0;
+        }
+        
+        .result-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .result-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            background: #008000;
+            color: white;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .result-content {
+            color: #4a5568;
+            line-height: 1.8;
+            font-size: 14px;
+            white-space: pre-line;
+        }
+        
+        .result-content ul {
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+        
+        .result-content li {
+            margin-bottom: 8px;
+        }
+        
+        .alert {
+            padding: 15px;
+            background: #fff5f5;
+            border: 1px solid #feb2b2;
+            border-radius: 8px;
+            color: #c53030;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        
+        .success {
+            padding: 15px;
+            background: #f0fff4;
+            border: 1px solid #9ae6b4;
+            border-radius: 8px;
+            color: #22543d;
+            font-size: 14px;
+        }
+        
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                border-radius: 0;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .radio-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        function ClassificadorAtendimento() {
+            const [dados, setDados] = useState({
+                // Local do Atendimento
+                zona: '',
+                infraConsolidada: false,
+                areaInferior2ha: false,
+                indiciosUrbanizacao: false,
+                expansaoNaturalMunic: false,
+                
+                // Rede Local e Cargas
+                redeAPorta: false,
+                ramalSubt: false,
+                cargaMenor50: false,
+                cargaAcima75: false,
+                primeiroAtend: false,
+                necessarioExtensao: false,
+                necessarioConversao: false,
+                tensaoBaixa: false,
+                atendIndividual: false,
+                semAlterExclusiva: false,
+                
+                // Documentação
+                registroApresentado: false,
+                indigena: false,
+                quilombola: false,
+                regularidadeUrbana: false,
+                heranca: false,
+                ccirIndividualizado: false
+            });
+
+            const [resultados, setResultados] = useState({
+                classificacao: '',
+                orientacoes: '',
+                universalizacao: '',
+                categorias: []
+            });
+
+            const handleChange = (campo, valor) => {
+                setDados(prev => ({
+                    ...prev,
+                    [campo]: valor
+                }));
+            };
+
+            useEffect(() => {
+                calcularClassificacao();
+            }, [dados]);
+
+            const calcularClassificacao = () => {
+                const categorias = [];
+                let orientacoes = '';
+                let hasRural = false;
+                let hasUrban = false;
+
+                // NÃO RURAL → URBANO
+                if (dados.zona !== 'Rural') {
+                    categorias.push('Atendimento como Imóvel Urbano');
+                    hasUrban = true;
+                    
+                    orientacoes += `• Enquadramento urbano:\n`;
+                    orientacoes += `O pedido não se caracteriza como rural e será tratado como imóvel urbano.\n`;
+                    orientacoes += `Documentação esperada:\n`;
+                    orientacoes += `- Documento de posse ou propriedade;\n`;
+                    orientacoes += `- Comprovação de regularidade urbana (IPTU).\n\n`;
+                    orientacoes += `• Regularização Fundiária (REURB):\n`;
+                    orientacoes += `O atendimento poderá ser enquadrado em REURB, com custos atribuídos aos beneficiários.\n\n`;
+                    
+                } else {
+                    // RURAL
+                    if (dados.heranca) {
+                        categorias.push('Pedido envolvendo Herança');
+                        hasRural = true;
+                        orientacoes += `• Pedido envolvendo Herança:\n`;
+                        orientacoes += `Este pedido envolve processo de herança e requer documentação específica.\n\n`;
+                        
+                    } else if (dados.indigena) {
+                        categorias.push('Pedido envolvendo Área Indígena');
+                        hasRural = true;
+                        orientacoes += `• Pedido envolvendo Área Indígena:\n`;
+                        orientacoes += `Atendimento em área indígena requer procedimentos específicos e autorização da FUNAI.\n\n`;
+                        
+                    } else if (dados.quilombola) {
+                        categorias.push('Pedido envolvendo Área Quilombola');
+                        hasRural = true;
+                        orientacoes += `• Pedido envolvendo Área Quilombola:\n`;
+                        orientacoes += `Atendimento em área quilombola requer procedimentos específicos e documentação da comunidade.\n\n`;
+                        
+                    } else if (dados.indiciosUrbanizacao) {
+                        // Com infraestrutura consolidada → REURB
+                        if (dados.infraConsolidada && dados.expansaoNaturalMunic) {
+                            categorias.push('Necessária Regularização Fundiária (REURB)');
+                            hasUrban = true;
+                            
+                            orientacoes += `• Área rural com indícios de urbanização e infraestrutura consolidada:\n`;
+                            orientacoes += `O atendimento requer Regularização Fundiária Urbana (REURB).\n`;
+                            orientacoes += `REURB-E: custeada pelos beneficiários;\n`;
+                            orientacoes += `REURB-S: custeada pelo município, conforme Lei nº 13.465/2017 e REN 1000/2021.\n\n`;
+                            
+                        } else {
+                            categorias.push('Parcelamento de Solo');
+                            hasRural = true;
+                            
+                            orientacoes += `• Área rural com indícios de urbanização sem infraestrutura consolidada:\n`;
+                            orientacoes += `Caracteriza parcelamento de solo.\n`;
+                            orientacoes += `A implantação ou custeio da infraestrutura básica das redes internas de energia elétrica é de responsabilidade do interessado, conforme REN 1000/2021 (arts. 480 a 484).\n\n`;
+                        }
+                        
+                    } else {
+                        // Sem indícios de urbanização
+                        if (dados.areaInferior2ha && (dados.registroApresentado || dados.ccirIndividualizado)) {
+                            categorias.push('Atendimento como Imóvel Rural');
+                            hasRural = true;
+                            
+                            orientacoes += `• Área rural sem indícios de urbanização:\n`;
+                            orientacoes += `O atendimento pode ser enquadrado como imóvel rural, mediante apresentação da documentação rural aplicável.\n\n`;
+                            
+                        } else {
+                            categorias.push('Imóvel rural abaixo da FMP');
+                            hasRural = true;
+                            
+                            orientacoes += `• Área rural inferior à Fração Mínima de Parcelamento (FMP):\n`;
+                            orientacoes += `É necessária a apresentação de Certificado de Cadastro de Imóvel Rural (CCIR) individualizado, referente à área solicitada.\n\n`;
+                        }
+                    }
+                }
+
+                // CARGA > 75 kW (transversal)
+                if (dados.cargaAcima75) {
+                    categorias.push('Carga instalada superior a 75 kW');
+                    
+                    orientacoes += `• Carga instalada acima de 75 kW:\n`;
+                    orientacoes += `Solicitações com esse porte exigem análise técnica específica.\n`;
+                    orientacoes += `Documentação técnica necessária:\n`;
+                    orientacoes += `- Cadastro da solicitação no APRWEB por Responsável Técnico;\n`;
+                    orientacoes += `- Formulário de orçamento de conexão/alteração de carga;\n`;
+                    orientacoes += `- Planta de situação/locação;\n`;
+                    orientacoes += `- ART devidamente registrada.\n\n`;
+                }
+
+                // Documentação base
+                let docBase = '';
+                if (hasRural) {
+                    docBase = `Documentação normalmente requerida para atendimento em área rural:\n`;
+                    docBase += `- Documento de posse ou propriedade do imóvel (escritura, contrato de compra e venda, arrendamento ou equivalente);\n`;
+                    docBase += `- Certificado de Cadastro de Imóvel Rural (CCIR) da área solicitada.\n\n`;
+                }
+                if (hasUrban) {
+                    docBase += `Documentação normalmente requerida para atendimento em área urbana:\n`;
+                    docBase += `- Documento de posse ou propriedade do imóvel;\n`;
+                    docBase += `- Documento municipal que comprove regularidade da edificação (IPTU, alvará, Habite-se, certidão de número ou equivalente).\n\n`;
+                }
+
+                orientacoes = docBase + orientacoes;
+
+                // Universalização (somente urbano)
+                let universalizacao = '';
+                if (dados.zona !== 'Rural') {
+                    const isUniversalizavel = 
+                        dados.tensaoBaixa &&
+                        dados.atendIndividual &&
+                        dados.cargaMenor50 &&
+                        dados.primeiroAtend &&
+                        dados.semAlterExclusiva &&
+                        !dados.necessarioExtensao &&
+                        !dados.necessarioConversao;
+
+                    if (isUniversalizavel) {
+                        universalizacao = `A solicitação atende integralmente aos critérios de universalização de obra em área urbana, considerando:\n`;
+                        universalizacao += `• Atendimento em baixa tensão;\n`;
+                        universalizacao += `• Atendimento individual;\n`;
+                        universalizacao += `• Carga instalada inferior a 50 kW;\n`;
+                        universalizacao += `• Primeiro atendimento do imóvel;\n`;
+                        universalizacao += `• Ausência de necessidade de alteração exclusiva para o solicitante;\n`;
+                        universalizacao += `• Ausência de necessidade de extensão ou conversão de rede;\n`;
+                        universalizacao += `• Ausência de necessidade de ramal subterrâneo.`;
+                    } else {
+                        universalizacao = `A solicitação não atende integralmente aos critérios de universalização de obra em área urbana. O enquadramento depende da avaliação individual dos requisitos técnicos informados no checklist.`;
+                    }
+                } else {
+                    universalizacao = `Critérios de universalização de obra aplicáveis exclusivamente a atendimentos em área urbana.`;
+                }
+
+                // Classificação principal
+                let classificacaoPrincipal = '';
+                if (categorias.length > 0) {
+                    classificacaoPrincipal = categorias[0];
+                }
+
+                setResultados({
+                    classificacao: classificacaoPrincipal,
+                    orientacoes: orientacoes,
+                    universalizacao: universalizacao,
+                    categorias: categorias
+                });
+            };
+
+            const CheckboxField = ({ label, checked, onChange }) => (
+                <div 
+                    className={`checkbox-option ${checked ? 'checked' : ''}`}
+                    onClick={() => onChange(!checked)}
+                >
+                    <input 
+                        type="checkbox" 
+                        checked={checked}
+                        onChange={(e) => onChange(e.target.checked)}
+                        onClick={(e) => e.stopPropagation()}
+                    />
+                    <span>{label}</span>
+                </div>
+            );
+
+            return (
+                <div className="container">
+                    <div className="header">
+                        <h1>⚡ Classificador de Atendimento Elétrico</h1>
+                        <p>Sistema de classificação para solicitações de ligação de energia elétrica</p>
+                    </div>
+
+                    <div className="content">
+                        {/* LOCAL DO ATENDIMENTO */}
+                        <div className="section">
+                            <div className="section-title">
+                                <div className="section-icon">📌</div>
+                                Local do Atendimento
+                            </div>
+                            
+                            <div className="form-group">
+                                <label className="form-label">Zona de Localização</label>
+                                <div className="radio-group">
+                                    <label className="radio-option">
+                                        <input 
+                                            type="radio" 
+                                            name="zona"
+                                            value="Rural"
+                                            checked={dados.zona === 'Rural'}
+                                            onChange={(e) => handleChange('zona', e.target.value)}
+                                        />
+                                        <span>Rural</span>
+                                    </label>
+                                    <label className="radio-option">
+                                        <input 
+                                            type="radio" 
+                                            name="zona"
+                                            value="Urbano"
+                                            checked={dados.zona === 'Urbano'}
+                                            onChange={(e) => handleChange('zona', e.target.value)}
+                                        />
+                                        <span>Urbano</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div className="grid-2">
+                                <CheckboxField 
+                                    label="Possui infraestrutura consolidada"
+                                    checked={dados.infraConsolidada}
+                                    onChange={(v) => handleChange('infraConsolidada', v)}
+                                />
+                                <CheckboxField 
+                                    label="Área do terreno/imóvel inferior a 2 ha"
+                                    checked={dados.areaInferior2ha}
+                                    onChange={(v) => handleChange('areaInferior2ha', v)}
+                                />
+                                <CheckboxField 
+                                    label="Há indícios de urbanização"
+                                    checked={dados.indiciosUrbanizacao}
+                                    onChange={(v) => handleChange('indiciosUrbanizacao', v)}
+                                />
+                                <CheckboxField 
+                                    label="Área de expansão natural do município"
+                                    checked={dados.expansaoNaturalMunic}
+                                    onChange={(v) => handleChange('expansaoNaturalMunic', v)}
+                                />
+                            </div>
+                        </div>
+
+                        {/* REDE LOCAL E CARGAS */}
+                        <div className="section">
+                            <div className="section-title">
+                                <div className="section-icon">⚡</div>
+                                Rede Local e Cargas
+                            </div>
+                            
+                            <div className="grid-2">
+                                <CheckboxField 
+                                    label="Possui rede de baixa tensão à porta"
+                                    checked={dados.redeAPorta}
+                                    onChange={(v) => handleChange('redeAPorta', v)}
+                                />
+                                <CheckboxField 
+                                    label="Ramal subterrâneo"
+                                    checked={dados.ramalSubt}
+                                    onChange={(v) => handleChange('ramalSubt', v)}
+                                />
+                                <CheckboxField 
+                                    label="Carga instalada inferior a 50 kW"
+                                    checked={dados.cargaMenor50}
+                                    onChange={(v) => handleChange('cargaMenor50', v)}
+                                />
+                                <CheckboxField 
+                                    label="Carga instalada acima de 75 kW"
+                                    checked={dados.cargaAcima75}
+                                    onChange={(v) => handleChange('cargaAcima75', v)}
+                                />
+                                <CheckboxField 
+                                    label="Primeiro atendimento"
+                                    checked={dados.primeiroAtend}
+                                    onChange={(v) => handleChange('primeiroAtend', v)}
+                                />
+                                <CheckboxField 
+                                    label="Necessário extensão de rede"
+                                    checked={dados.necessarioExtensao}
+                                    onChange={(v) => handleChange('necessarioExtensao', v)}
+                                />
+                                <CheckboxField 
+                                    label="Necessário conversão de rede"
+                                    checked={dados.necessarioConversao}
+                                    onChange={(v) => handleChange('necessarioConversao', v)}
+                                />
+                                <CheckboxField 
+                                    label="Atendimento em baixa tensão"
+                                    checked={dados.tensaoBaixa}
+                                    onChange={(v) => handleChange('tensaoBaixa', v)}
+                                />
+                                <CheckboxField 
+                                    label="Atendimento individual"
+                                    checked={dados.atendIndividual}
+                                    onChange={(v) => handleChange('atendIndividual', v)}
+                                />
+                                <CheckboxField 
+                                    label="Sem alteração na rede por motivo exclusivo"
+                                    checked={dados.semAlterExclusiva}
+                                    onChange={(v) => handleChange('semAlterExclusiva', v)}
+                                />
+                            </div>
+                        </div>
+
+                        {/* DOCUMENTAÇÃO */}
+                        <div className="section">
+                            <div className="section-title">
+                                <div className="section-icon">📄</div>
+                                Documentação
+                            </div>
+                            
+                            <div className="grid-2">
+                                <CheckboxField 
+                                    label="Registro apresentado"
+                                    checked={dados.registroApresentado}
+                                    onChange={(v) => handleChange('registroApresentado', v)}
+                                />
+                                <CheckboxField 
+                                    label="Localizado em área indígena"
+                                    checked={dados.indigena}
+                                    onChange={(v) => handleChange('indigena', v)}
+                                />
+                                <CheckboxField 
+                                    label="Localizado em área quilombola"
+                                    checked={dados.quilombola}
+                                    onChange={(v) => handleChange('quilombola', v)}
+                                />
+                                <CheckboxField 
+                                    label="Regularidade urbana apresentada"
+                                    checked={dados.regularidadeUrbana}
+                                    onChange={(v) => handleChange('regularidadeUrbana', v)}
+                                />
+                                <CheckboxField 
+                                    label="Inventário ou herança"
+                                    checked={dados.heranca}
+                                    onChange={(v) => handleChange('heranca', v)}
+                                />
+                                <CheckboxField 
+                                    label="CCIR individualizado"
+                                    checked={dados.ccirIndividualizado}
+                                    onChange={(v) => handleChange('ccirIndividualizado', v)}
+                                />
+                            </div>
+                        </div>
+
+                        {/* RESULTADOS */}
+                        {resultados.classificacao && (
+                            <div className="results">
+                                <div className="result-card">
+                                    <div className="result-title">
+                                        <span>🏷️ Classificação Principal</span>
+                                    </div>
+                                    <div className="result-badge">{resultados.classificacao}</div>
+                                    
+                                    {resultados.categorias.length > 1 && (
+                                        <div style={{marginTop: '15px'}}>
+                                            <strong>Todas as classificações aplicáveis:</strong>
+                                            <ul>
+                                                {resultados.categorias.map((cat, idx) => (
+                                                    <li key={idx}>{cat}</li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div className="result-card">
+                                    <div className="result-title">
+                                        <span>📋 Orientações e Documentação</span>
+                                    </div>
+                                    <div className="result-content">{resultados.orientacoes}</div>
+                                </div>
+
+                                <div className="result-card">
+                                    <div className="result-title">
+                                        <span>💡 Critérios de Universalização</span>
+                                    </div>
+                                    <div className="result-content">{resultados.universalizacao}</div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        }
+
+        ReactDOM.render(<ClassificadorAtendimento />, document.getElementById('root'));
+    </script>
+</body>
+</html>
