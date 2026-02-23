@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Classificador de Atendimento Elétrico</title>
+    <title>SICAN – Sistema de Classificação de Atendimento de Novas Conexões</title>
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -27,10 +27,11 @@
         }
 
         .header {
-            background: linear-gradient(135deg, #006400 0%, #008000 100%);
+            background: #008000;
             color: white;
             padding: 30px;
             text-align: center;
+            position: relative;
         }
 
         .header h1 { font-size: 28px; margin-bottom: 10px; }
@@ -73,7 +74,7 @@
         .step-circle.active {
             background: #008000;
             color: white;
-            box-shadow: 0 0 0 4px rgba(0,128,0,0.2);
+            box-shadow: 0 0 0 4px lch(46.23% 71.85 136.02 / 0.2);
         }
 
         .step-circle.done {
@@ -131,7 +132,7 @@
         .section-icon {
             width: 26px;
             height: 26px;
-            background: #008000;
+            background: #00800069;
             border-radius: 6px;
             display: flex;
             align-items: center;
@@ -320,7 +321,7 @@
             background: #fff5f5;
             border: 1px solid #feb2b2;
             border-radius: 8px;
-            color: #c53030;
+            color: #000000;
             font-size: 14px;
             margin-bottom: 20px;
         }
@@ -488,7 +489,7 @@
                 let hasRural = false;
                 let hasUrban = false;
 
-                if (dados.zona !== 'Rural') {
+                if (dados.zona !== 'Área Rural') {
                     categorias.push('Atendimento como Imóvel Urbano');
                     hasUrban = true;
                     orientacoes += `• Enquadramento urbano:\nO pedido não se caracteriza como rural e será tratado como imóvel urbano.\nDocumentação esperada:\n- Documento de posse ou propriedade;\n- Comprovação de regularidade urbana (IPTU).\n\n`;
@@ -584,8 +585,15 @@
             return (
                 <div className="container">
                     <div className="header">
-                        <h1>⚡ Classificador de Atendimento Elétrico</h1>
-                        <p>Sistema de classificação para solicitações de ligação de energia elétrica</p>
+                        <img src="logo.png" alt="Logo" style={{
+                            position: 'absolute',
+                            top: '16px',
+                            right: '20px',
+                            height: '50px',
+                            objectFit: 'contain'
+                        }} />
+                        <h1>Módulo Corporativo de Classificação Técnica de Novas Conexões</h1>
+                        <p>Sistema destinado à análise, enquadramento regulatório e definição do tipo de atendimento para solicitações de ligação de energia elétrica na área de concessão</p>
                     </div>
 
                     <div className="content">
@@ -596,12 +604,12 @@
                             <div className="section">
                                 <div className="section-title">
                                     <div className="section-icon">📌</div>
-                                    Zona de Localização do Imóvel
+                                    Enquadramento da Localização do Imóvel
                                 </div>
                                 <div className="form-group">
-                                    <label className="form-label">Selecione a zona onde o imóvel está localizado:</label>
+                                    <label className="form-label">Classificação da Zona de Localização do Imóvel:</label>
                                     <div className="radio-group">
-                                        {['Rural', 'Urbano'].map(z => (
+                                        {['Área Rural', 'Área Urbana'].map(z => (
                                             <label key={z} className={`radio-option ${dados.zona === z ? 'selected' : ''}`}>
                                                 <input
                                                     type="radio"
@@ -610,13 +618,13 @@
                                                     checked={dados.zona === z}
                                                     onChange={(e) => handleChange('zona', e.target.value)}
                                                 />
-                                                <span>{z === 'Rural' ? '🌿 Rural' : '🏙️ Urbano'}</span>
+                                                <span>{z === 'Área Rural' ? '🌿 Área Rural' : '🏙️ Área Urbana'}</span>
                                             </label>
                                         ))}
                                     </div>
                                 </div>
                                 {!dados.zona && (
-                                    <div className="alert">⚠️ Selecione a zona para continuar.</div>
+                                    <div className="alert">⚠️ Selecione a zona territorial para aplicação dos critérios técnicos e regulatórios.</div>
                                 )}
                             </div>
                         )}
